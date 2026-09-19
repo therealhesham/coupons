@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool, { ensureSchema } from "@/lib/db";
 
-const PHONE_PATTERN = /^01[0125][0-9]{8}$/;
+const PHONE_PATTERN = /^05[0-9]{8}$/;
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);

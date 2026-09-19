@@ -35,7 +35,7 @@ function CheckMark({ className }: { className?: string }) {
   );
 }
 
-const PHONE_PATTERN = /^01[0125][0-9]{8}$/;
+const PHONE_PATTERN = /^05[0-9]{8}$/;
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -54,7 +54,7 @@ export default function Home() {
       return;
     }
     if (!PHONE_PATTERN.test(phone.trim())) {
-      setError("رقم الجوال غير صحيح، تأكد إنه ١١ رقم ويبدأ بـ 01.");
+      setError("رقم الجوال غير صحيح، تأكد إنه ١٠ أرقام ويبدأ بـ 05.");
       return;
     }
 
@@ -87,7 +87,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
-      <section className="relative flex flex-col justify-between gap-10 overflow-hidden bg-teal-deep px-8 py-12 text-paper md:w-[46%] md:px-14 md:py-16">
+      <section className="relative flex flex-col justify-between gap-6 overflow-hidden bg-teal-deep px-8 py-8 text-paper md:w-[46%] md:gap-10 md:px-14 md:py-16">
         <div
           className="pointer-events-none absolute -left-24 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full opacity-20 blur-3xl"
           style={{ background: "radial-gradient(circle, var(--gold) 0%, transparent 70%)" }}
@@ -99,7 +99,7 @@ export default function Home() {
         </div>
 
         <div className="relative flex flex-col gap-5">
-          <h1 className="font-display text-4xl leading-[1.15] md:text-5xl">
+          <h1 className="font-display text-3xl leading-[1.15] md:text-5xl">
             خصومات المعرض في انتظارك
           </h1>
           <p className="max-w-sm text-lg leading-8 text-paper/80">
@@ -112,7 +112,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="flex flex-1 items-center justify-center bg-paper px-6 py-14 md:px-16">
+      <section className="flex flex-1 items-start justify-center bg-paper px-6 py-10 md:items-center md:px-16 md:py-14">
         <div className="w-full max-w-sm">
           {status === "done" ? (
             <div className="flex flex-col items-start gap-5">
@@ -134,7 +134,7 @@ export default function Home() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-7" noValidate>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5 md:gap-7" noValidate>
               <div className="flex flex-col gap-2">
                 <h2 className="font-display text-3xl text-ink">تسجيل بيانات زائر جديد</h2>
                 <p className="text-base leading-7 text-ink-soft">
@@ -161,7 +161,7 @@ export default function Home() {
                   dir="ltr"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="01xxxxxxxxx"
+                  placeholder="05xxxxxxxx"
                   inputMode="numeric"
                   autoComplete="tel"
                   className="rounded-xl border border-paper-line bg-white px-4 py-3 text-right text-base text-ink outline-none transition-colors placeholder:text-ink-soft/50 focus:border-teal-deep"
