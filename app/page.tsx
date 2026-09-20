@@ -36,10 +36,12 @@ function CheckMark({ className }: { className?: string }) {
 }
 
 const PHONE_PATTERN = /^05[0-9]{8}$/;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function Home() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "submitting" | "done">("idle");
   const [registeredName, setRegisteredName] = useState("");
@@ -57,13 +59,21 @@ export default function Home() {
       setError("رقم الجوال غير صحيح، تأكد إنه ١٠ أرقام ويبدأ بـ 05.");
       return;
     }
+    if (!EMAIL_PATTERN.test(email.trim())) {
+      setError("البريد الإلكتروني غير صحيح.");
+      return;
+    }
 
     setStatus("submitting");
     try {
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: trimmedName, phone: phone.trim() }),
+        body: JSON.stringify({
+          name: trimmedName,
+          phone: phone.trim(),
+          email: email.trim(),
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
@@ -80,6 +90,7 @@ export default function Home() {
   function handleReset() {
     setName("");
     setPhone("");
+    setEmail("");
     setError(null);
     setStatus("idle");
     setRegisteredName("");
@@ -164,6 +175,19 @@ export default function Home() {
                   placeholder="05xxxxxxxx"
                   inputMode="numeric"
                   autoComplete="tel"
+                  className="rounded-xl border border-paper-line bg-white px-4 py-3 text-right text-base text-ink outline-none transition-colors placeholder:text-ink-soft/50 focus:border-teal-deep"
+                />
+              </label>
+
+              <label className="flex flex-col gap-2">
+                <span className="text-sm font-medium text-ink-soft">البريد الإلكتروني</span>
+                <input
+                  type="email"
+                  dir="ltr"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="example@email.com"
+                  autoComplete="email"
                   className="rounded-xl border border-paper-line bg-white px-4 py-3 text-right text-base text-ink outline-none transition-colors placeholder:text-ink-soft/50 focus:border-teal-deep"
                 />
               </label>
