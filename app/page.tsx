@@ -1,6 +1,11 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useEffect, useState, FormEvent } from "react";
+
+interface Sector {
+  id: number;
+  name: string;
+}
 
 function CouponMark({ className }: { className?: string }) {
   return (
@@ -42,9 +47,25 @@ export default function Home() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [sectors, setSectors] = useState<Sector[]>([]);
+  const [allSectors, setAllSectors] = useState(true);
+  const [selectedSectorIds, setSelectedSectorIds] = useState<number[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "submitting" | "done">("idle");
   const [registeredName, setRegisteredName] = useState("");
+
+  useEffect(() => {
+    fetch("/api/sectors")
+      .then((res) => res.json())
+      .then((data) => setSectors(data.sectors ?? []))
+      .catch(() => {});
+  }, []);
+
+  function toggleSector(id: number) {
+    setSelectedSectorIds((prev) =>
+      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+    );
+  }
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -63,6 +84,10 @@ export default function Home() {
       setError("البريد الإلكتروني غير صحيح.");
       return;
     }
+    if (!allSectors && selectedSectorIds.length === 0) {
+      setError("اختار قطاع واحد على الأقل، أو حدد كل القطاعات.");
+      return;
+    }
 
     setStatus("submitting");
     try {
@@ -73,6 +98,8 @@ export default function Home() {
           name: trimmedName,
           phone: phone.trim(),
           email: email.trim(),
+          allSectors,
+          sectorIds: selectedSectorIds,
         }),
       });
       if (!res.ok) {
@@ -91,6 +118,8 @@ export default function Home() {
     setName("");
     setPhone("");
     setEmail("");
+    setAllSectors(true);
+    setSelectedSectorIds([]);
     setError(null);
     setStatus("idle");
     setRegisteredName("");
@@ -191,6 +220,40 @@ export default function Home() {
                   className="rounded-xl border border-paper-line bg-white px-4 py-3 text-right text-base text-ink outline-none transition-colors placeholder:text-ink-soft/50 focus:border-teal-deep"
                 />
               </label>
+
+              <div className="flex flex-col gap-3">
+                <span className="text-sm font-medium text-ink-soft">القطاعات اللي تهمك</span>
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={allSectors}
+                    onChange={(e) => setAllSectors(e.target.checked)}
+                    className="h-4 w-4"
+                  />
+                  <span className="text-base text-ink">كل القطاعات</span>
+                </label>
+
+                {!allSectors && (
+                  <div className="flex flex-col gap-2 rounded-xl border border-paper-line p-4">
+                    {sectors.length === 0 ? (
+                      <p className="text-sm text-ink-soft">لسه مفيش قطاعات متاحة.</p>
+                    ) : (
+                      sectors.map((sector) => (
+                        <label key={sector.id} className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={selectedSectorIds.includes(sector.id)}
+                            onChange={() => toggleSector(sector.id)}
+                            className="h-4 w-4"
+                          />
+                          <span className="text-base text-ink">{sector.name}</span>
+                        </label>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
 
               {error && <p className="text-sm text-[#9b3b3b]">{error}</p>}
 

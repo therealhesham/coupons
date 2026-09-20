@@ -7,7 +7,9 @@ interface Registration {
   name: string;
   phone: string;
   email: string;
-  registered_at: string;
+  allSectors: boolean;
+  sectors: string[];
+  registeredAt: string;
 }
 
 export default function AdminRegistrationsPage() {
@@ -54,6 +56,7 @@ export default function AdminRegistrationsPage() {
                 <th className="px-4 py-3 font-medium">الاسم</th>
                 <th className="px-4 py-3 font-medium">الجوال</th>
                 <th className="px-4 py-3 font-medium">البريد الإلكتروني</th>
+                <th className="px-4 py-3 font-medium">القطاعات</th>
                 <th className="px-4 py-3 font-medium">تاريخ التسجيل</th>
               </tr>
             </thead>
@@ -68,7 +71,10 @@ export default function AdminRegistrationsPage() {
                     {r.email}
                   </td>
                   <td className="px-4 py-3 text-sm text-ink-soft">
-                    {new Date(r.registered_at).toLocaleString("ar-EG")}
+                    {r.allSectors ? "كل القطاعات" : r.sectors.join("، ") || "بدون قطاعات"}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-ink-soft">
+                    {new Date(r.registeredAt).toLocaleString("ar-EG")}
                   </td>
                 </tr>
               ))}

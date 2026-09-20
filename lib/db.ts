@@ -71,6 +71,11 @@ export function ensureSchema(): Promise<void> {
         "email",
         "VARCHAR(255) NOT NULL DEFAULT ''"
       );
+      await addColumnIfMissing(
+        "registrations",
+        "all_sectors",
+        "BOOLEAN NOT NULL DEFAULT TRUE"
+      );
 
       await pool.query(
         `CREATE TABLE IF NOT EXISTS admin_users (
@@ -106,6 +111,16 @@ export function ensureSchema(): Promise<void> {
           sector_id INT NOT NULL,
           PRIMARY KEY (coupon_id, sector_id),
           FOREIGN KEY (coupon_id) REFERENCES coupons(id) ON DELETE CASCADE,
+          FOREIGN KEY (sector_id) REFERENCES sectors(id) ON DELETE CASCADE
+        )`
+      );
+
+      await pool.query(
+        `CREATE TABLE IF NOT EXISTS registration_sectors (
+          registration_id INT NOT NULL,
+          sector_id INT NOT NULL,
+          PRIMARY KEY (registration_id, sector_id),
+          FOREIGN KEY (registration_id) REFERENCES registrations(id) ON DELETE CASCADE,
           FOREIGN KEY (sector_id) REFERENCES sectors(id) ON DELETE CASCADE
         )`
       );
