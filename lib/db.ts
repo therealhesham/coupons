@@ -25,6 +25,20 @@ if (process.env.NODE_ENV !== "production") {
 
 let schemaReady: Promise<void> | null = null;
 
+async function addColumnIfMissing(
+  table: string,
+  column: string,
+  definition: string
+): Promise<void> {
+  const [rows] = await pool.query(
+    `SELECT COLUMN_NAME FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?`,
+    [table, column]
+  );
+  if ((rows as unknown[]).length > 0) return;
+  await pool.query(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+}
+
 async function seedInitialAdmin(): Promise<void> {
   const username = process.env.ADMIN_USERNAME;
   const password = process.env.ADMIN_PASSWORD;
@@ -51,6 +65,11 @@ export function ensureSchema(): Promise<void> {
           email VARCHAR(255) NOT NULL,
           registered_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
         )`
+      );
+      await addColumnIfMissing(
+        "registrations",
+        "email",
+        "VARCHAR(255) NOT NULL DEFAULT ''"
       );
 
       await pool.query(

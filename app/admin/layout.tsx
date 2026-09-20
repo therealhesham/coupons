@@ -33,6 +33,12 @@ export default function AdminLayout({
           >
             الكوبونات
           </Link>
+          <Link
+            href="/admin/registrations"
+            className="text-sm font-medium text-ink-soft transition-colors hover:text-teal-deep"
+          >
+            المسجلين
+          </Link>
         </nav>
         <LogoutButton />
       </header>
